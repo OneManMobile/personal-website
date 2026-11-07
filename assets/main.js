@@ -385,8 +385,16 @@ const io = new IntersectionObserver((entries) => {
 }, { threshold: 0.15, rootMargin: '0px 0px -5% 0px' });
 document.querySelectorAll('.reveal').forEach((el) => io.observe(el));
 
-const clock = document.getElementById('clock');
+const clocks = document.querySelectorAll('.clock');
 const fmt = new Intl.DateTimeFormat('en-GB', { timeZone: 'Europe/Copenhagen', hour: '2-digit', minute: '2-digit' });
-const tick = () => { clock.textContent = fmt.format(new Date()); };
+const tick = () => { const time = fmt.format(new Date()); clocks.forEach((el) => { el.textContent = time; }); };
 tick();
 setInterval(tick, 15000);
+
+const specimen = document.querySelector('.neo-specimen');
+const weight = document.querySelector('.neo-weight input');
+const weightOut = document.querySelector('.neo-weight output');
+weight.addEventListener('input', () => {
+  specimen.style.fontWeight = weight.value;
+  weightOut.textContent = weight.value;
+});

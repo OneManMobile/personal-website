@@ -1,0 +1,42 @@
+# Andreas Rudolph
+
+> Andreas Rudolph is a Danish digital product engineer, entrepreneur, technologist and father, based in Copenhagen. He currently works on Endavu (https://endavu.com), Denmark's new investment platform. Online he goes by OneManMobile.
+
+This is the personal website of Andreas Rudolph. It is a single page at https://andreas-rudolph.me/ with five sections: Bio, Products, Projects, Art and Life.
+
+Key facts:
+
+- Building software since 2010, when his first Android app was published on Google Play.
+- Runs RiverSite ApS, a Danish software consultancy developing digital services (founded 2017).
+- Languages he works in include Kotlin, Rust and Python.
+- Contact: onemanmobile@gmail.com · LinkedIn: https://www.linkedin.com/in/andreasrudolph · X: https://x.com/OneManMobile (@OneManMobile)
+
+## Bio
+
+- [Website](https://andreas-rudolph.me/): Bio, products, projects, art and life in one page
+- [LinkedIn](https://www.linkedin.com/in/andreasrudolph): Professional history
+- [X / @OneManMobile](https://x.com/OneManMobile): Posts about software, AI and Danish society
+
+## Products
+
+- [Endavu](https://endavu.com): Denmark's new investment platform; 30,000+ stocks and ETFs at low prices, automatic tax reporting and a social investing community. Andreas works on it as a product engineer.
+- [Awoken – Lucid Dreaming Tool](https://play.google.com/store/apps/details?id=com.lucid_dreaming.awoken): Android dream journal and lucid dreaming trainer, on Google Play since 2013; 1,000,000+ installs, rated 4.4 by 21,000+ users.
+- [Futuruna](https://futuruna.com/): A programming language for law (2026). Laws, contracts and policies become code you can run, test and audit, mixed with ordinary programs and compiled through Rust. See also [Why Futuruna](https://futuruna.com/why) and the [AI setup guide](https://futuruna.com/ai-setup.md).
+
+## Projects
+
+- [Sylvester Chatwell](https://github.com/OneManMobile/sylvester-chatwell): A household butler for Denmark that runs inside Grok Bot; plans weekly dinners around nemlig.com offers and fills the basket (2026).
+- [Antropi](https://github.com/OneManMobile/Antropi): AI exploration based on causal entropy — intelligence as maximising future freedom of action (2024).
+- [ALASCA](https://github.com/OneManMobile/ALASCA): The Android Layout Scaler (2012).
+- [Android AR Kit](https://github.com/OneManMobile/Android-AR-Kit): Open-source geographic augmented reality library for Android (2012).
+
+## Art
+
+- [Runion Neo](https://github.com/OneManMobile/runion-neo): Display typeface; Latin and the Unicode Runic block drawn as straight lines between dots on a 3 × 7 grid. Variable weight 300–700, SIL Open Font License (2026).
+- [Runion Simplex](https://github.com/OneManMobile/runion-simplex): Terminal companion to Runion Neo, same strokes on a wider lattice (2026).
+- [Runion Basic](https://github.com/OneManMobile/Runion-Font): The first experiment; the Elder Futhark on the same dot grid (2026).
+- [Coding Pirates badges](https://github.com/OneManMobile/CodingPiratesAchievements): Achievement badge illustrations for Coding Pirates, the Danish coding club for kids (2016).
+
+## Optional
+
+- [GitHub](https://github.com/OneManMobile): All public repositories
