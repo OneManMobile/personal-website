@@ -76,13 +76,20 @@ function createField(canvas, hero) {
   const box = hero.querySelector('[data-name-box]');
 
   function layout() {
-    const bw = box.clientWidth;
+    // front page: the name gets whatever width the photo leaves; sub-pages: the full column
+    const row = box.parentElement;
+    const photo = isPage ? null : row.querySelector('.hero-portrait');
+    const avail = photo
+      ? row.clientWidth - photo.offsetWidth - (parseFloat(getComputedStyle(row).columnGap) || 0)
+      : box.clientWidth;
     const words = TEXT.split(' ');
-    const oneLine = words.length === 1 || bw >= 820;
+    const fullCols = TEXT.length * 3 - 1;
+    const oneLine = words.length === 1 || avail / fullCols >= (isPage ? 12 : 13);
     const lines = oneLine ? [TEXT] : words;
     const wCols = Math.max(...lines.map((l) => l.length)) * 3 - 1;
     const hRows = lines.length * 6 + (lines.length - 1) * 3;
-    p = Math.max(8, Math.floor(Math.min(bw / wCols, isPage ? 34 : 26)));
+    p = Math.max(6, Math.floor(Math.min(avail / wCols, isPage ? 34 : 18)));
+    if (photo) box.style.width = `${wCols * p}px`;
     box.style.height = `${hRows * p}px`;
 
     const r = canvas.getBoundingClientRect();
@@ -91,15 +98,14 @@ function createField(canvas, hero) {
     dpr = Math.min(window.devicePixelRatio || 1, 2);
     canvas.width = Math.round(W * dpr);
     canvas.height = Math.round(H * dpr);
-    ox = Math.round(b.left - r.left + (isPage ? 0 : (bw - wCols * p) / 2));
+    ox = Math.round(b.left - r.left);
     oy = Math.round(b.top - r.top);
 
     cells = [];
     lines.forEach((line, li) => {
-      const shift = isPage ? 0 : Math.round((wCols - (line.length * 3 - 1)) / 2);
       Array.from(line).forEach((ch, ci) => {
         if (ch === ' ') return;
-        cells.push({ ch, col: shift + ci * 3, row: li * 9, idx: cells.length });
+        cells.push({ ch, col: ci * 3, row: li * 9, idx: cells.length });
       });
     });
 

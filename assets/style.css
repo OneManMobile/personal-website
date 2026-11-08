@@ -134,18 +134,28 @@ a.label:hover { color: var(--accent); }
   text-align: center;
 }
 .hero-stack--page { align-items: flex-start; justify-content: flex-end; padding-top: clamp(64px, 12vh, 140px); text-align: left; }
+/* photo and name sit side by side; the pair is centred as one unit */
+.hero-ident {
+  align-self: stretch;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  gap: clamp(16px, 2.2vw, 36px);
+}
 .hero-portrait {
   display: block;
-  width: clamp(112px, 11vw, 168px);
+  flex: none;
+  width: clamp(92px, 8.4vw, 136px);
   height: auto;
-  aspect-ratio: 2 / 3;
+  aspect-ratio: 3 / 4;
   object-fit: cover;
-  object-position: 60% 30%;
+  object-position: 80% 30%;
   clip-path: var(--hex);
   animation: rise 1.2s .1s cubic-bezier(.2, .7, .1, 1) both;
 }
-/* the canvas draws the name inside this box; script sets its height */
-.hero-name { width: 100%; height: 160px; margin: 0; }
+/* the canvas draws the name inside this box; the script sizes it */
+.hero-name { flex: none; height: 120px; margin: 0; }
+.hero-stack--page .hero-name { width: 100%; }
 .hero-role { margin: 0; max-width: 64em; color: var(--ink); animation: rise 1.4s 1.35s cubic-bezier(.2, .7, .1, 1) both; }
 .hero-role span { white-space: nowrap; }
 .lede {
@@ -267,7 +277,7 @@ a.label:hover { color: var(--accent); }
 .bio-head .about-big { margin: 0; }
 .bio-head > :only-child { grid-column: 1 / -1; }
 .portrait { margin: 0; display: grid; gap: 12px; justify-items: center; }
-.portrait img { display: block; width: 100%; height: auto; aspect-ratio: 2 / 3; object-fit: cover; object-position: 60% 30%; clip-path: var(--hex); transition: filter .9s ease; }
+.portrait img { display: block; width: 100%; height: auto; aspect-ratio: 3 / 4; object-fit: cover; object-position: 80% 30%; clip-path: var(--hex); transition: filter .9s ease; }
 @media (hover: hover) {
   .portrait img { filter: grayscale(1) contrast(1.06); }
   .portrait:hover img { filter: none; }
