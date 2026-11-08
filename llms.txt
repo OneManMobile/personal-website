@@ -2,7 +2,7 @@
 
 > Andreas Rudolph is a Danish digital product engineer, entrepreneur, technologist and father, based in Copenhagen. He currently works on Endavu (https://endavu.com), Denmark's new investment platform. Online he goes by OneManMobile.
 
-This is the personal website of Andreas Rudolph. It is a single page at https://andreas-rudolph.me/ with five sections: Bio, Products, Projects, Art and Life.
+This is the personal website of Andreas Rudolph. The front page (https://andreas-rudolph.me/) introduces him and links to five pages: Bio, Products, Projects, Art and Life.
 
 Key facts:
 
@@ -13,7 +13,11 @@ Key facts:
 
 ## Bio
 
-- [Website](https://andreas-rudolph.me/): Bio, products, projects, art and life in one page
+- [Bio page](https://andreas-rudolph.me/bio/): Introduction, facts and timeline
+- [Products page](https://andreas-rudolph.me/products/): Endavu, Awoken and Futuruna
+- [Projects page](https://andreas-rudolph.me/projects/): Sylvester Chatwell, Antropi and older open source
+- [Art page](https://andreas-rudolph.me/art/): Typefaces and illustration
+- [Life page](https://andreas-rudolph.me/life/): Father, Copenhagen, dreams
 - [LinkedIn](https://www.linkedin.com/in/andreasrudolph): Professional history
 - [X / @OneManMobile](https://x.com/OneManMobile): Posts about software, AI and Danish society
 

@@ -42,7 +42,9 @@ function strokeLengths(ch) {
 /* ── the dot field ────────────────────────────────────── */
 function createField(canvas, hero) {
   const ctx = canvas.getContext('2d');
-  const NAME = 'ANDREAS RUDOLPH';
+  // the hero draws the name; sub-pages draw their own title, a little smaller
+  const TEXT = (canvas.dataset.text || 'ANDREAS RUDOLPH').toUpperCase();
+  const isPage = canvas.dataset.size === 'page';
   const STAGGER_IN = 75, DUR_IN = 1100, STAGGER_SWAP = 55, DUR_SWAP = 1000, TRAIL_LIFE = 1800;
 
   let W = 0, H = 0, dpr = 1, p = 20, ox = 0, oy = 0, gx0 = 0, gy0 = 0;
@@ -72,13 +74,15 @@ function createField(canvas, hero) {
     canvas.height = Math.round(H * dpr);
 
     const g = Math.min(56, Math.max(20, window.innerWidth * 0.04));
-    const oneLine = W >= 900 && W / H > 1.15;
-    const lines = oneLine ? [NAME] : ['ANDREAS', 'RUDOLPH'];
+    const words = TEXT.split(' ');
+    const oneLine = words.length === 1 || (W >= 900 && W / H > 1.15);
+    const lines = oneLine ? [TEXT] : words;
     const wCols = Math.max(...lines.map((l) => l.length)) * 3 - 1;
     const hRows = lines.length * 6 + (lines.length - 1) * 3;
-    p = Math.max(8, Math.floor(Math.min((W - 2 * g) / wCols, (H * 0.42) / hRows)));
+    const fit = Math.min((W - 2 * g) / wCols, (H * (isPage ? 0.3 : 0.42)) / hRows);
+    p = Math.max(8, Math.floor(fit * (isPage ? 1 : 0.86)));
     ox = Math.round(g);
-    oy = oneLine ? Math.round(H * 0.3) : Math.round(Math.max(96, H * 0.17));
+    oy = isPage ? Math.round(Math.max(104, H * 0.32)) : oneLine ? Math.round(H * 0.3) : Math.round(Math.max(96, H * 0.17));
 
     cells = [];
     lines.forEach((line, li) => {
@@ -222,7 +226,7 @@ function createField(canvas, hero) {
     ctx.lineCap = 'square';
     ctx.lineJoin = 'miter';
     ctx.miterLimit = 2;
-    const pen = Math.max(1.5, p * 0.16);
+    const pen = Math.max(1.8, p * 0.21);
     let animating = false;
     for (const c of cells) {
       const cx = ox + c.col * p, cy = oy + c.row * p;
@@ -306,21 +310,93 @@ function createField(canvas, hero) {
   };
 }
 
-/* ── sigils: a rune per project, drawn on the same grid ─ */
-function sigilSVG(ch) {
-  const S = 10;
-  const P = ([x, y]) => `${x * S},${(6 - y) * S}`;
-  let grid = '', ink = '';
-  for (let x = 0; x <= 2; x++) for (let y = 0; y <= 6; y++) grid += `<rect x="${x * S - 1}" y="${(6 - y) * S - 1}" width="2" height="2"/>`;
-  for (const s of GLYPHS[ch]) {
-    if (s.length === 1) {
-      const [x, y] = P(s[0]).split(',').map(Number);
-      ink += `<rect class="ink-dot" x="${x - 2.5}" y="${y - 2.5}" width="5" height="5"/>`;
-    } else {
-      ink += `<polyline class="ink" pathLength="1" points="${s.map(P).join(' ')}"/>`;
+/* ── Antropi: ants that keep their future options open ─ */
+function createAnts(canvas) {
+  const ctx = canvas.getContext('2d');
+  const S = 18, STEP_MS = 150, TRAIL_LIFE = 5200, COUNT = 7;
+  const DIRS = [[1, 0], [1, 1], [0, 1], [-1, 1], [-1, 0], [-1, -1], [0, -1], [1, -1]];
+  let W = 0, H = 0, dpr = 1, cols = 0, rows = 0, ox = 0, oy = 0;
+  let ants = [], trail = [], visible = false, lastStep = 0, running = false;
+
+  const inside = (x, y) => x >= 0 && y >= 0 && x <= cols && y <= rows;
+  const occupied = (x, y) => ants.some((a) => a.x === x && a.y === y);
+  // Antropi's idea: prefer the move that leaves the most moves afterwards
+  const freedom = (x, y) => DIRS.reduce((n, [dx, dy]) => n + (inside(x + dx, y + dy) && !occupied(x + dx, y + dy) ? 1 : 0), 0);
+
+  function resize() {
+    const r = canvas.getBoundingClientRect();
+    W = r.width; H = r.height;
+    dpr = Math.min(window.devicePixelRatio || 1, 2);
+    canvas.width = Math.round(W * dpr);
+    canvas.height = Math.round(H * dpr);
+    cols = Math.max(2, Math.floor(W / S) - 1);
+    rows = Math.max(2, Math.floor(H / S) - 1);
+    ox = (W - cols * S) / 2; oy = (H - rows * S) / 2;
+    ants = [];
+    while (ants.length < COUNT) {
+      const x = Math.floor(Math.random() * (cols + 1)), y = Math.floor(Math.random() * (rows + 1));
+      if (!occupied(x, y)) ants.push({ x, y, d: Math.floor(Math.random() * 8) });
     }
+    trail = [];
+    if (reduceMotion) { for (let i = 0; i < 40; i++) step(i * STEP_MS); draw(40 * STEP_MS); }
   }
-  return `<svg class="sigil" viewBox="-6 -6 32 72" aria-hidden="true"><g class="grid">${grid}</g>${ink}</svg>`;
+
+  function step(now) {
+    for (const a of ants) {
+      let best = null, bestScore = -Infinity;
+      for (let turn = -2; turn <= 2; turn++) {
+        const d = (a.d + turn + 8) % 8;
+        const nx = a.x + DIRS[d][0], ny = a.y + DIRS[d][1];
+        if (!inside(nx, ny) || occupied(nx, ny)) continue;
+        const score = freedom(nx, ny) + (turn === 0 ? 1.2 : 0) + Math.random() * 2.4;
+        if (score > bestScore) { bestScore = score; best = { nx, ny, d }; }
+      }
+      if (!best) { a.d = (a.d + 4) % 8; continue; }
+      trail.push({ x1: a.x, y1: a.y, x2: best.nx, y2: best.ny, t: now });
+      a.x = best.nx; a.y = best.ny; a.d = best.d;
+    }
+    while (trail.length && now - trail[0].t > TRAIL_LIFE) trail.shift();
+  }
+
+  function draw(now) {
+    const css = getComputedStyle(root);
+    const ink = css.getPropertyValue('--ink').trim();
+    const accent = css.getPropertyValue('--accent').trim();
+    ctx.setTransform(dpr, 0, 0, dpr, 0, 0);
+    ctx.clearRect(0, 0, W, H);
+    ctx.fillStyle = ink;
+    ctx.globalAlpha = 0.18;
+    for (let x = 0; x <= cols; x++) for (let y = 0; y <= rows; y++) ctx.fillRect(ox + x * S - 1, oy + y * S - 1, 2, 2);
+    ctx.strokeStyle = accent;
+    ctx.lineWidth = 2;
+    ctx.lineCap = 'square';
+    for (const s of trail) {
+      ctx.globalAlpha = 0.85 * (1 - (now - s.t) / TRAIL_LIFE) ** 1.4;
+      ctx.beginPath();
+      ctx.moveTo(ox + s.x1 * S, oy + s.y1 * S);
+      ctx.lineTo(ox + s.x2 * S, oy + s.y2 * S);
+      ctx.stroke();
+    }
+    ctx.globalAlpha = 1;
+    ctx.fillStyle = ink;
+    for (const a of ants) ctx.fillRect(ox + a.x * S - 3.5, oy + a.y * S - 3.5, 7, 7);
+  }
+
+  function frame(now) {
+    if (!visible || document.hidden) { running = false; return; }
+    if (now - lastStep > STEP_MS) { step(now); lastStep = now; }
+    draw(now);
+    requestAnimationFrame(frame);
+  }
+  function wake() {
+    if (reduceMotion || running || !visible || document.hidden) return;
+    running = true;
+    requestAnimationFrame(frame);
+  }
+
+  new ResizeObserver(resize).observe(canvas);
+  new IntersectionObserver(([e]) => { visible = e.isIntersecting; wake(); }).observe(canvas);
+  document.addEventListener('visibilitychange', wake);
 }
 
 /* ── reality check: in dreams, text doesn't stay the same ─ */
@@ -352,9 +428,10 @@ function setupRuneText() {
 }
 
 /* ── boot ─────────────────────────────────────────────── */
-const field = createField(document.getElementById('field'), document.querySelector('.hero'));
+const fieldCanvas = document.getElementById('field');
+const field = fieldCanvas ? createField(fieldCanvas, fieldCanvas.closest('.hero')) : null;
 
-document.querySelectorAll('[data-sigil]').forEach((fig) => fig.insertAdjacentHTML('afterbegin', sigilSVG(fig.dataset.sigil)));
+document.querySelectorAll('canvas[data-ants]').forEach(createAnts);
 
 const restoreText = setupRuneText();
 
@@ -373,7 +450,7 @@ button.addEventListener('click', () => {
   root.classList.add('switching');
   setTimeout(() => root.classList.remove('switching'), 1300);
   applyMode();
-  field.setMode(dream);
+  field?.setMode(dream);
   if (!dream) restoreText();
   try { localStorage.setItem('mode', dream ? 'dream' : 'day'); } catch {}
 });
@@ -394,7 +471,9 @@ setInterval(tick, 15000);
 const specimen = document.querySelector('.neo-specimen');
 const weight = document.querySelector('.neo-weight input');
 const weightOut = document.querySelector('.neo-weight output');
-weight.addEventListener('input', () => {
-  specimen.style.fontWeight = weight.value;
-  weightOut.textContent = weight.value;
-});
+if (specimen && weight) {
+  weight.addEventListener('input', () => {
+    specimen.style.fontWeight = weight.value;
+    weightOut.textContent = weight.value;
+  });
+}
