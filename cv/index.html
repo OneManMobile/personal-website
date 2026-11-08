@@ -1,0 +1,189 @@
+<!doctype html>
+<html lang="en">
+<head>
+  <meta charset="utf-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1">
+  <title>CV — Andreas Rudolph</title>
+  <meta name="description" content="CV of Andreas Rudolph: super-intelligence orchestrator, product engineer, sales engineer, digital artist and entrepreneur in Copenhagen. Principal Product Engineer for Web & Android at Endavu.">
+  <link rel="canonical" href="https://andreas-rudolph.me/cv/">
+  <link rel="describedby" href="/llms.txt" type="text/markdown">
+  <meta name="author" content="Andreas Rudolph">
+  <link rel="icon" href="/assets/favicon.svg" type="image/svg+xml">
+  <style>
+    @font-face { font-family: "Runion Neo"; src: url("/assets/fonts/RunionNeo.woff2") format("woff2"); font-weight: 300 700; }
+    @font-face { font-family: "Runion Simplex"; src: url("/assets/fonts/RunionSimplex.woff2") format("woff2"); font-weight: 300 700; }
+    @font-face { font-family: "Instrument Serif"; src: url("/assets/fonts/InstrumentSerif-Regular.woff2") format("woff2"); }
+    @font-face { font-family: "Instrument Serif"; src: url("/assets/fonts/InstrumentSerif-Italic.woff2") format("woff2"); font-style: italic; }
+    @page { size: A4; margin: 0; }
+    :root { --paper: #f1ede3; --ink: #16150f; --muted: #6f6b61; --rule: rgba(22, 21, 15, .16); --accent: #c8452c; }
+    * { box-sizing: border-box; }
+    html { background: #d9d4c7; color: var(--ink); }
+    body { margin: 0; font-family: "Instrument Serif", Georgia, serif; font-size: 13.4px; line-height: 1.38; -webkit-font-smoothing: antialiased; }
+    a { color: inherit; text-decoration: none; }
+    .label { font-family: "Runion Simplex", ui-monospace, monospace; font-size: 9.5px; letter-spacing: .04em; color: var(--muted); }
+
+    .bar { position: sticky; top: 0; z-index: 2; display: flex; justify-content: space-between; align-items: center; gap: 16px; max-width: 210mm; margin: 0 auto; padding: 18px 4px; }
+    .bar .label { font-size: 13px; color: var(--ink); }
+    .download { display: inline-flex; align-items: center; gap: 10px; padding: 11px 18px; background: var(--ink); color: var(--paper); font: 500 13px/1 "Runion Simplex", monospace; letter-spacing: .04em; clip-path: polygon(10px 0, calc(100% - 10px) 0, 100% 10px, 100% calc(100% - 10px), calc(100% - 10px) 100%, 10px 100%, 0 calc(100% - 10px), 0 10px); }
+    .download:hover { background: var(--accent); }
+
+    .sheet { width: 210mm; min-height: 297mm; margin: 0 auto 48px; padding: 13mm 16mm 11mm; background: var(--paper); box-shadow: 0 20px 60px rgba(22, 21, 15, .18); }
+    header { display: grid; grid-template-columns: 27mm 1fr; gap: 7mm; align-items: center; padding-bottom: 6mm; border-bottom: 1px solid var(--rule); }
+    .photo { display: block; width: 27mm; height: 36mm; object-fit: cover; object-position: 80% 30%; clip-path: polygon(50% 0, 100% 12%, 100% 88%, 50% 100%, 0 88%, 0 12%); }
+    h1 { margin: 0 0 2.5mm; font-family: "Runion Neo", monospace; font-weight: 400; font-size: 31px; line-height: 1; letter-spacing: .02em; }
+    .roles { margin: 0 0 3mm; font-family: "Runion Simplex", monospace; font-size: 10px; letter-spacing: .04em; color: var(--ink); }
+    .contact { display: flex; flex-wrap: wrap; gap: 1mm 5mm; margin: 0; }
+    .contact a { border-bottom: 1px solid var(--rule); }
+
+    .cols { display: grid; grid-template-columns: 1fr 52mm; gap: 9mm; padding-top: 6mm; }
+    h2 { margin: 0 0 2.6mm; padding-bottom: 1.4mm; border-bottom: 1px solid var(--rule); font-family: "Runion Simplex", monospace; font-weight: 500; font-size: 10px; letter-spacing: .06em; color: var(--accent); }
+    section + section { margin-top: 4.5mm; }
+    p { margin: 0 0 2mm; }
+    .lead { font-size: 16px; line-height: 1.22; }
+    .job { display: grid; gap: .6mm; padding: 1.8mm 0; border-bottom: 1px dotted var(--rule); break-inside: avoid; }
+    .job:last-child { border-bottom: 0; }
+    .job-head { display: flex; justify-content: space-between; align-items: baseline; gap: 4mm; }
+    .org { font-size: 15px; }
+    .when { white-space: nowrap; }
+    .role { color: var(--muted); }
+    ul { margin: 0; padding: 0; list-style: none; }
+    .list li { padding: .9mm 0; border-bottom: 1px dotted var(--rule); }
+    .list li:last-child { border-bottom: 0; }
+    .side .item { margin-bottom: 2.6mm; }
+    .side .item b { display: block; font-weight: 400; font-size: 14px; }
+    .side .item span { color: var(--muted); }
+    .tags { display: flex; flex-wrap: wrap; gap: 1.2mm; }
+    .tags li { padding: .6mm 2mm; border: 1px solid var(--rule); font-size: 11.5px; }
+    footer { margin-top: 6mm; padding-top: 3mm; border-top: 1px solid var(--rule); display: flex; justify-content: space-between; }
+
+    @media screen and (max-width: 820px) {
+      html { background: var(--paper); }
+      .bar { padding: 16px 20px; }
+      .sheet { width: auto; min-height: 0; margin: 0; padding: 8px 20px 48px; box-shadow: none; }
+      header { grid-template-columns: 88px 1fr; }
+      .photo { width: 88px; height: 117px; }
+      .cols { grid-template-columns: 1fr; }
+    }
+    @media print {
+      html, body { background: var(--paper); -webkit-print-color-adjust: exact; print-color-adjust: exact; }
+      .bar { display: none; }
+      .sheet { margin: 0; box-shadow: none; height: 297mm; min-height: 0; overflow: hidden; }
+    }
+  </style>
+</head>
+<body>
+  <div class="bar">
+    <a class="label" href="/">← andreas rudolph</a>
+    <a class="download" href="/cv/andreas-rudolph-cv.pdf" download>download cv · pdf ↓</a>
+  </div>
+
+  <main class="sheet">
+    <header>
+      <img class="photo" src="/assets/img/portrait.jpg" width="460" height="460" alt="Portrait of Andreas Rudolph">
+      <div>
+        <h1>Andreas Rudolph</h1>
+        <p class="roles">super-intelligence orchestrator · product engineer · sales engineer · digital artist · entrepreneur</p>
+        <p class="contact label">
+          <span>copenhagen, denmark</span>
+          <a href="mailto:onemanmobile@gmail.com">onemanmobile@gmail.com</a>
+          <a href="https://andreas-rudolph.me">andreas-rudolph.me</a>
+          <a href="https://www.linkedin.com/in/andreasrudolph">linkedin.com/in/andreasrudolph</a>
+          <a href="https://x.com/OneManMobile">x.com/onemanmobile</a>
+        </p>
+      </div>
+    </header>
+
+    <div class="cols">
+      <div>
+        <section>
+          <h2>profile</h2>
+          <p class="lead">Technological Product Leader, Expert Developer, App Entrepreneur, and Manager of IT Projects by drive and profession.</p>
+          <p>I have contributed to or led development on more than 20 app projects and am a self-publisher with over 1,000,000 downloads on personal projects. I studied computer science, started making apps as an Android developer, and then began leading others and broadening out into strategy and product leadership.</p>
+          <p>Today I orchestrate AI as a team to engineer products, sell them and make art. Technical leadership, mobile, web, design and cloud technology are my specialties, with deep practical experience in business development, solid estimation and marketing strategy.</p>
+        </section>
+
+        <section>
+          <h2>experience</h2>
+          <div class="job">
+            <div class="job-head"><span class="org">Endavu</span><span class="label when">now</span></div>
+            <span class="role">Principal Product Engineer, Web &amp; Android. Denmark’s best-rated investing app; Series A, expanding across Europe.</span>
+          </div>
+          <div class="job">
+            <div class="job-head"><span class="org">Nuuday</span></div>
+            <span class="role">Senior Product &amp; Technology Leader, Entertainment · Android Chapter Lead. YouSee Play, YouSee Musik &amp; Telmore Musik.</span>
+          </div>
+          <div class="job">
+            <div class="job-head"><span class="org">YouSee · TDC</span></div>
+            <span class="role">IT Consultant and Android Developer.</span>
+          </div>
+          <div class="job">
+            <div class="job-head"><span class="org">Jawper</span></div>
+            <span class="role">Co-founder.</span>
+          </div>
+          <div class="job">
+            <div class="job-head"><span class="org">Mobile Identity</span></div>
+            <span class="role">Android Project Manager.</span>
+          </div>
+          <div class="job">
+            <div class="job-head"><span class="org">CirCal</span></div>
+            <span class="role">IT Architect, Mobile Development &amp; Design.</span>
+          </div>
+        </section>
+
+        <section>
+          <h2>apps built or led</h2>
+          <ul class="list">
+            <li>YouSee Play · YouSee Musik &amp; Telmore Musik</li>
+            <li>Life, the digital health platform · Børn &amp; Helbred</li>
+            <li>Digital Culture Guide · CirCal</li>
+            <li>LinkAlarm · InkBlot, a Rorschach-inspired live wallpaper · Bink, a memory game</li>
+          </ul>
+        </section>
+      </div>
+
+      <aside class="side">
+        <section>
+          <h2>own products</h2>
+          <div class="item"><b>Awoken</b><span>Lucid dreaming app, 2013 →. 1,000,000+ installs, 4.4★ from 21,000+ ratings.</span></div>
+          <div class="item"><b>Futuruna</b><span>A programming language for law, 2026.</span></div>
+          <div class="item"><b>Runion Neo &amp; Simplex</b><span>Open-source typefaces, 2026.</span></div>
+          <div class="item"><b>Sylvester Chatwell</b><span>Household AI butler for Denmark, 2026.</span></div>
+        </section>
+
+        <section>
+          <h2>skills</h2>
+          <ul class="tags">
+            <li>AI orchestration</li>
+            <li>Product leadership</li>
+            <li>Technical leadership</li>
+            <li>Software project management</li>
+            <li>Strategic planning</li>
+            <li>Android</li>
+            <li>Web</li>
+            <li>Mobile product development</li>
+            <li>Design</li>
+            <li>Cloud</li>
+            <li>Business development</li>
+            <li>Estimation</li>
+          </ul>
+        </section>
+
+        <section>
+          <h2>education</h2>
+          <div class="item"><b>Computer science</b></div>
+        </section>
+
+        <section>
+          <h2>volunteering</h2>
+          <div class="item"><b>Coding Pirates</b><span>Teaching kids programming and technology.</span></div>
+        </section>
+      </aside>
+    </div>
+
+    <footer class="label">
+      <span>andreas rudolph · cv</span>
+      <span>andreas-rudolph.me</span>
+    </footer>
+  </main>
+</body>
+</html>

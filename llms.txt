@@ -22,6 +22,7 @@ Key facts:
 - [Projects page](https://andreas-rudolph.me/projects/): Sylvester Chatwell, Antropi and older open source
 - [Art page](https://andreas-rudolph.me/art/): Typefaces and illustration
 - [Life page](https://andreas-rudolph.me/life/): Father, Copenhagen, dreams
+- [CV](https://andreas-rudolph.me/cv/): One-page CV; also as [PDF](https://andreas-rudolph.me/cv/andreas-rudolph-cv.pdf)
 - [LinkedIn](https://www.linkedin.com/in/andreasrudolph): Professional history
 - [X / @OneManMobile](https://x.com/OneManMobile): Posts about software, AI and Danish society
 
