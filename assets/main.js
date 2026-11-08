@@ -3,12 +3,20 @@ import { GLYPHS } from './glyphs.js';
 const root = document.documentElement;
 const reduceMotion = matchMedia('(prefers-reduced-motion: reduce)').matches;
 
-const RUNE_OF = {
-  a: 'ᚨ', b: 'ᛒ', c: 'ᚲ', d: 'ᛞ', e: 'ᛖ', f: 'ᚠ', g: 'ᚷ', h: 'ᚺ', i: 'ᛁ', j: 'ᛃ', k: 'ᚲ', l: 'ᛚ', m: 'ᛗ',
-  n: 'ᚾ', o: 'ᛟ', p: 'ᛈ', q: 'ᚲ', r: 'ᚱ', s: 'ᛊ', t: 'ᛏ', u: 'ᚢ', v: 'ᚹ', w: 'ᚹ', x: 'ᚷ', y: 'ᛃ', z: 'ᛉ',
-  æ: 'ᚨ', ø: 'ᛟ', å: 'ᚨ',
-};
-const toRunes = (s) => Array.from(s, (c) => RUNE_OF[c.toLowerCase()] ?? c).join('');
+// in dreams, text never stays the same: the letters of each word trade places
+const scramble = (s) => s.replace(/\p{L}{3,}/gu, (word) => {
+  const rest = Array.from(word.slice(1));
+  if (new Set(rest).size < 2) return word;
+  let out = word;
+  while (out === word) {
+    for (let i = rest.length - 1; i > 0; i--) {
+      const j = Math.floor(Math.random() * (i + 1));
+      [rest[i], rest[j]] = [rest[j], rest[i]];
+    }
+    out = word[0] + rest.join('');
+  }
+  return out;
+});
 
 const PALETTE = {
   day: { ink: [22, 21, 15], dot: [22, 21, 15], dotAlpha: 0.2, accent: [200, 69, 44], theme: '#f1ede3' },
@@ -45,7 +53,7 @@ function createField(canvas, hero) {
   // the hero draws the name; sub-pages draw their own title, a little smaller
   const TEXT = (canvas.dataset.text || 'ANDREAS RUDOLPH').toUpperCase();
   const isPage = canvas.dataset.size === 'page';
-  const STAGGER_IN = 75, DUR_IN = 1100, STAGGER_SWAP = 55, DUR_SWAP = 1000, TRAIL_LIFE = 1800;
+  const STAGGER_IN = 75, DUR_IN = 1100, STAGGER_SWAP = 55, DUR_SWAP = 1400, TRAIL_LIFE = 1800;
 
   let W = 0, H = 0, dpr = 1, p = 20, ox = 0, oy = 0, gx0 = 0, gy0 = 0;
   let cells = [];
@@ -57,8 +65,7 @@ function createField(canvas, hero) {
 
   const now0 = performance.now();
   let phase = {
-    from: null,
-    to: dream ? 'rune' : 'latin',
+    reink: false,
     t0: reduceMotion ? -1e9 : now0 + 250,
     stagger: STAGGER_IN,
     dur: DUR_IN,
@@ -79,16 +86,20 @@ function createField(canvas, hero) {
     const lines = oneLine ? [TEXT] : words;
     const wCols = Math.max(...lines.map((l) => l.length)) * 3 - 1;
     const hRows = lines.length * 6 + (lines.length - 1) * 3;
-    const fit = Math.min((W - 2 * g) / wCols, (H * (isPage ? 0.3 : 0.42)) / hRows);
+    // on phones the hero grows with its content, so the name is sized by width alone
+    const flow = !isPage && W <= 760;
+    const fit = flow ? (W - 2 * g) / wCols : Math.min((W - 2 * g) / wCols, (H * (isPage ? 0.3 : 0.42)) / hRows);
     p = Math.max(8, Math.floor(fit * (isPage ? 1 : 0.86)));
     ox = Math.round(g);
-    oy = isPage ? Math.round(Math.max(104, H * 0.32)) : oneLine ? Math.round(H * 0.3) : Math.round(Math.max(96, H * 0.17));
+    oy = isPage ? Math.round(Math.max(104, H * 0.32)) : oneLine ? Math.round(H * 0.3) : Math.round(Math.max(84, H * 0.11));
+    if (flow) oy = 84;
+    hero.style.setProperty('--name-bottom', `${oy + hRows * p}px`);
 
     cells = [];
     lines.forEach((line, li) => {
       Array.from(line).forEach((ch, ci) => {
         if (ch === ' ') return;
-        cells.push({ latin: ch, rune: toRunes(ch), col: ci * 3, row: li * 9, idx: cells.length });
+        cells.push({ ch, col: ci * 3, row: li * 9, idx: cells.length });
       });
     });
 
@@ -235,9 +246,9 @@ function createField(canvas, hero) {
       const w = pen * (1 + 1.2 * f);
       const lt = clamp01((now - phase.t0 - c.idx * phase.stagger) / phase.dur);
       if (lt < 1) animating = true;
-      const e = easeInOut(lt);
-      if (phase.from && e < 1) drawGlyph(c[phase.from], cx, cy, 1 - e, w);
-      drawGlyph(c[phase.to], cx, cy, e, w);
+      // intro: draw in; mode switch: undraw, then draw again
+      const q = phase.reink ? (lt < 0.5 ? 1 - easeInOut(lt * 2) : easeInOut(lt * 2 - 1)) : easeInOut(lt);
+      drawGlyph(c.ch, cx, cy, q, w);
     }
 
     // the visitor's own constellation
@@ -303,7 +314,7 @@ function createField(canvas, hero) {
   return {
     setMode(isDream) {
       const now = performance.now();
-      phase = { from: phase.to, to: isDream ? 'rune' : 'latin', t0: reduceMotion ? -1e9 : now, stagger: STAGGER_SWAP, dur: DUR_SWAP };
+      phase = { reink: true, t0: reduceMotion ? -1e9 : now, stagger: STAGGER_SWAP, dur: DUR_SWAP };
       mixFrom = mix; mixTo = isDream ? 1 : 0; mixT0 = now;
       wake();
     },
@@ -400,10 +411,10 @@ function createAnts(canvas) {
 }
 
 /* ── reality check: in dreams, text doesn't stay the same ─ */
-function setupRuneText() {
-  const els = [...document.querySelectorAll('[data-rune]')];
-  for (const el of els) el.dataset.latin = el.textContent;
-  const swap = (el, on) => { el.textContent = on ? toRunes(el.dataset.latin) : el.dataset.latin; };
+function setupDreamText() {
+  const els = [...document.querySelectorAll('[data-dream]')];
+  for (const el of els) el.dataset.text = el.textContent;
+  const swap = (el, on) => { el.textContent = on ? scramble(el.dataset.text) : el.dataset.text; };
   // a work row's stretched link covers its title, so the whole row is the hover target
   const hoverTarget = (el) => el.closest('.work') ?? el;
   for (const el of els) {
@@ -433,7 +444,7 @@ const field = fieldCanvas ? createField(fieldCanvas, fieldCanvas.closest('.hero'
 
 document.querySelectorAll('canvas[data-ants]').forEach(createAnts);
 
-const restoreText = setupRuneText();
+const restoreText = setupDreamText();
 
 const button = document.querySelector('.reality');
 const buttonText = button.querySelector('.reality-text');
