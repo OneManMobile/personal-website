@@ -12,7 +12,8 @@ Key facts:
 - Volunteers with Coding Pirates, teaching young people to code.
 - Career before Endavu: Nuuday (Senior Product & Technology Leader, Entertainment; Android Chapter Lead), YouSee/TDC (IT consultant and Android developer), Jawper (co-founder), Mobile Identity (Android project manager), CirCal (IT architect, mobile development and design).
 - Apps built or led include YouSee Play, YouSee Musik & Telmore Musik, Life (digital health platform), Børn & Helbred, Digital Culture Guide, LinkAlarm, InkBlot, Bink and Awoken.
-- Languages he works in include Kotlin, Rust and Python.
+- LinkedIn headline: Principal Product Engineer, Web @ Endavu | Super Intelligence Orchestrator, Architecture, Growth.
+- Skills include technical leadership, engineering management, software and IT architecture, mobile product development, UX design, Android, React, Next.js, Java, Kotlin, Python and cloud.
 - Contact: onemanmobile@gmail.com · LinkedIn: https://www.linkedin.com/in/andreasrudolph · X: https://x.com/OneManMobile (@OneManMobile)
 
 ## Bio

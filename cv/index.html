@@ -52,8 +52,9 @@
     .side .item { margin-bottom: 2.6mm; }
     .side .item b { display: block; font-weight: 400; font-size: 14px; }
     .side .item span { color: var(--muted); }
-    .tags { display: flex; flex-wrap: wrap; gap: 1.2mm; }
-    .tags li { padding: .6mm 2mm; border: 1px solid var(--rule); font-size: 11.5px; }
+    .skill-group + .skill-group { margin-top: 2.2mm; }
+    .skill-group .label { display: block; margin-bottom: .6mm; }
+    .skill-group p { margin: 0; font-size: 12.4px; line-height: 1.32; }
     footer { margin-top: 6mm; padding-top: 3mm; border-top: 1px solid var(--rule); display: flex; justify-content: space-between; }
 
     @media screen and (max-width: 820px) {
@@ -152,20 +153,10 @@
 
         <section>
           <h2>skills</h2>
-          <ul class="tags">
-            <li>AI orchestration</li>
-            <li>Product leadership</li>
-            <li>Technical leadership</li>
-            <li>Software project management</li>
-            <li>Strategic planning</li>
-            <li>Android</li>
-            <li>Web</li>
-            <li>Mobile product development</li>
-            <li>Design</li>
-            <li>Cloud</li>
-            <li>Business development</li>
-            <li>Estimation</li>
-          </ul>
+          <div class="skill-group"><span class="label">leadership</span><p>AI orchestration · technical leadership · engineering management · strategic planning · operational excellence · technical project management</p></div>
+          <div class="skill-group"><span class="label">product &amp; design</span><p>Mobile product development · UX design · usability · mobile interface design · wireframing · graphic &amp; vector design</p></div>
+          <div class="skill-group"><span class="label">engineering</span><p>Software &amp; IT architecture · Android · web · React · Next.js · Java · Kotlin · JavaScript · Python · SQL · cloud</p></div>
+          <div class="skill-group"><span class="label">growth</span><p>Business development · estimation · online &amp; social media marketing</p></div>
         </section>
 
         <section>
