@@ -72,34 +72,34 @@ function createField(canvas, hero) {
   };
   let mix = dream ? 1 : 0, mixFrom = mix, mixTo = mix, mixT0 = 0;
   let running = false, visible = true, rafId = 0;
+  // the name lives in a real box in the page; the canvas draws it there, so text can never overlap it
+  const box = hero.querySelector('[data-name-box]');
 
   function layout() {
+    const bw = box.clientWidth;
+    const words = TEXT.split(' ');
+    const oneLine = words.length === 1 || bw >= 820;
+    const lines = oneLine ? [TEXT] : words;
+    const wCols = Math.max(...lines.map((l) => l.length)) * 3 - 1;
+    const hRows = lines.length * 6 + (lines.length - 1) * 3;
+    p = Math.max(8, Math.floor(Math.min(bw / wCols, isPage ? 34 : 26)));
+    box.style.height = `${hRows * p}px`;
+
     const r = canvas.getBoundingClientRect();
+    const b = box.getBoundingClientRect();
     W = r.width; H = r.height;
     dpr = Math.min(window.devicePixelRatio || 1, 2);
     canvas.width = Math.round(W * dpr);
     canvas.height = Math.round(H * dpr);
-
-    const g = Math.min(56, Math.max(20, window.innerWidth * 0.04));
-    const words = TEXT.split(' ');
-    const oneLine = words.length === 1 || (W >= 900 && W / H > 1.15);
-    const lines = oneLine ? [TEXT] : words;
-    const wCols = Math.max(...lines.map((l) => l.length)) * 3 - 1;
-    const hRows = lines.length * 6 + (lines.length - 1) * 3;
-    // on phones the hero grows with its content, so the name is sized by width alone
-    const flow = !isPage && W <= 760;
-    const fit = flow ? (W - 2 * g) / wCols : Math.min((W - 2 * g) / wCols, (H * (isPage ? 0.3 : 0.42)) / hRows);
-    p = Math.max(8, Math.floor(fit * (isPage ? 1 : 0.86)));
-    ox = Math.round(g);
-    oy = isPage ? Math.round(Math.max(104, H * 0.32)) : oneLine ? Math.round(H * 0.3) : Math.round(Math.max(84, H * 0.11));
-    if (flow) oy = 84;
-    hero.style.setProperty('--name-bottom', `${oy + hRows * p}px`);
+    ox = Math.round(b.left - r.left + (isPage ? 0 : (bw - wCols * p) / 2));
+    oy = Math.round(b.top - r.top);
 
     cells = [];
     lines.forEach((line, li) => {
+      const shift = isPage ? 0 : Math.round((wCols - (line.length * 3 - 1)) / 2);
       Array.from(line).forEach((ch, ci) => {
         if (ch === ' ') return;
-        cells.push({ ch, col: ci * 3, row: li * 9, idx: cells.length });
+        cells.push({ ch, col: shift + ci * 3, row: li * 9, idx: cells.length });
       });
     });
 
@@ -305,7 +305,11 @@ function createField(canvas, hero) {
   hero.addEventListener('pointermove', onMove, { passive: true });
   hero.addEventListener('pointerleave', onLeave);
   hero.addEventListener('pointercancel', onLeave);
-  new ResizeObserver(layout).observe(canvas);
+  // re-measure when the canvas or the column around the name changes (fonts, images, wrapping)
+  const ro = new ResizeObserver(layout);
+  ro.observe(canvas);
+  ro.observe(box.parentElement);
+  document.fonts?.ready.then(layout);
   new IntersectionObserver(([entry]) => { visible = entry.isIntersecting; wake(); }).observe(canvas);
   document.addEventListener('visibilitychange', () => { visible = !document.hidden; wake(); });
 
