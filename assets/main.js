@@ -50,15 +50,13 @@ function strokeLengths(ch) {
 /* ── the dot field ────────────────────────────────────── */
 function createField(canvas, hero) {
   const ctx = canvas.getContext('2d');
-  // the hero draws the name; sub-pages draw their own title, a little smaller
-  const TEXT = (canvas.dataset.text || 'ANDREAS RUDOLPH').toUpperCase();
-  const isPage = canvas.dataset.size === 'page';
+  const TEXT = 'Andreas Rudolph';
   const STAGGER_IN = 75, DUR_IN = 1100, STAGGER_SWAP = 55, DUR_SWAP = 1400, TRAIL_LIFE = 1800;
 
   let W = 0, H = 0, dpr = 1, p = 20, ox = 0, oy = 0, gx0 = 0, gy0 = 0;
   let cells = [];
   let dots = new Float32Array(0);
-  const pointer = { x: 0, y: 0, sx: 0, sy: 0, presence: 0, inside: false };
+  const pointer = { x: 0, y: 0, sx: 0, sy: 0, presence: 0, inside: false, down: false };
   const trail = [];
   let lastSnap = null;
   let stars = [], nextStar = 0;
@@ -76,20 +74,18 @@ function createField(canvas, hero) {
   const box = hero.querySelector('[data-name-box]');
 
   function layout() {
-    // front page: the name gets whatever width the photo leaves; sub-pages: the full column
+    // the name gets whatever width the photo leaves
     const row = box.parentElement;
-    const photo = isPage ? null : row.querySelector('.hero-portrait');
-    const avail = photo
-      ? row.clientWidth - photo.offsetWidth - (parseFloat(getComputedStyle(row).columnGap) || 0)
-      : box.clientWidth;
+    const photo = row.querySelector('.hero-portrait');
+    const avail = row.clientWidth - photo.offsetWidth - (parseFloat(getComputedStyle(row).columnGap) || 0);
     const words = TEXT.split(' ');
     const fullCols = TEXT.length * 3 - 1;
-    const oneLine = words.length === 1 || avail / fullCols >= (isPage ? 12 : 13);
+    const oneLine = avail / fullCols >= 13;
     const lines = oneLine ? [TEXT] : words;
     const wCols = Math.max(...lines.map((l) => l.length)) * 3 - 1;
     const hRows = lines.length * 6 + (lines.length - 1) * 3;
-    p = Math.max(6, Math.floor(Math.min(avail / wCols, isPage ? 34 : 18)));
-    if (photo) box.style.width = `${wCols * p}px`;
+    p = Math.max(6, Math.floor(Math.min(avail / wCols, 18)));
+    box.style.width = `${wCols * p}px`;
     box.style.height = `${hRows * p}px`;
 
     const r = canvas.getBoundingClientRect();
@@ -259,12 +255,13 @@ function createField(canvas, hero) {
 
     // the visitor's own constellation
     const accent = pal.accent;
+    // lines drawn with the button held stay until it's released, then fade like the rest
     for (let i = trail.length - 1; i >= 0; i--) {
-      if (now - trail[i].t > TRAIL_LIFE) trail.splice(i, 1);
+      if (!trail[i].held && now - trail[i].t > TRAIL_LIFE) trail.splice(i, 1);
     }
     ctx.lineWidth = Math.max(1.2, pen * 0.5);
     for (const s of trail) {
-      const a = (1 - (now - s.t) / TRAIL_LIFE) ** 1.5;
+      const a = s.held ? 1 : (1 - (now - s.t) / TRAIL_LIFE) ** 1.5;
       ctx.strokeStyle = rgba(accent, a);
       ctx.beginPath(); ctx.moveTo(s.x1, s.y1); ctx.lineTo(s.x2, s.y2); ctx.stroke();
     }
@@ -298,19 +295,47 @@ function createField(canvas, hero) {
     const ix = Math.round((x - gx0) / p), iy = Math.round((y - gy0) / p);
     const sx = gx0 + ix * p, sy = gy0 + iy * p;
     if (!lastSnap || lastSnap.ix !== ix || lastSnap.iy !== iy) {
-      if (lastSnap && Math.hypot(sx - lastSnap.x, sy - lastSnap.y) < p * 5) {
-        trail.push({ x1: lastSnap.x, y1: lastSnap.y, x2: sx, y2: sy, t: performance.now() });
-        if (trail.length > 80) trail.shift();
+      if (lastSnap) {
+        // a fast move can skip many dots between events: bridge the gap in grid-snapped hops of at most four cells
+        const steps = Math.ceil(Math.max(Math.abs(ix - lastSnap.ix), Math.abs(iy - lastSnap.iy)) / 4);
+        const t = performance.now();
+        let a = lastSnap;
+        for (let k = 1; k <= steps; k++) {
+          const jx = Math.round(lastSnap.ix + ((ix - lastSnap.ix) * k) / steps);
+          const jy = Math.round(lastSnap.iy + ((iy - lastSnap.iy) * k) / steps);
+          const bx = gx0 + jx * p, by = gy0 + jy * p;
+          trail.push({ x1: a.x, y1: a.y, x2: bx, y2: by, t, held: pointer.down });
+          a = { x: bx, y: by };
+        }
+        if (!pointer.down) while (trail.length > 80) trail.shift();
       }
       lastSnap = { ix, iy, x: sx, y: sy };
     }
     wake();
   }
   function onLeave() { pointer.inside = false; lastSnap = null; wake(); }
+  function onDown(e) {
+    if (e.button !== 0) return;
+    pointer.down = true;
+    onMove(e);
+  }
+  function onUp() {
+    if (!pointer.down) return;
+    pointer.down = false;
+    const now = performance.now();
+    for (const s of trail) if (s.held) { s.held = false; s.t = now; }
+    wake();
+  }
 
   hero.addEventListener('pointermove', onMove, { passive: true });
   hero.addEventListener('pointerleave', onLeave);
   hero.addEventListener('pointercancel', onLeave);
+  hero.addEventListener('pointerdown', onDown);
+  // drawing from empty space shouldn't start a text selection; pressing on text still selects it
+  hero.addEventListener('mousedown', (e) => { if (e.button === 0 && !e.target.closest('a, p, button, input, label')) e.preventDefault(); });
+  window.addEventListener('pointerup', onUp);
+  window.addEventListener('pointercancel', onUp);
+  window.addEventListener('blur', onUp);
   // re-measure when the canvas or the column around the name changes (fonts, images, wrapping)
   const ro = new ResizeObserver(layout);
   ro.observe(canvas);
